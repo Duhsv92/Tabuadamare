@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, ReferenceLine
@@ -1306,6 +1306,8 @@ function buildCurve(dateStr, offsetMin, data = DHN_DATA) {
     const type = h >= prevH && h >= nextH ? "high" : "low";
     return { min, h, type };
   });
+
+
   // refine type using neighbors
   events.forEach((e, i) => {
     const prev = events[i - 1]?.h ?? e.h;
@@ -1399,6 +1401,447 @@ const CustomTooltip = ({ active, payload, label }) => {
     </div>
   );
 };
+
+// ─── CUSTOM CALENDAR COMPONENT ───
+const MONTH_NAMES = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
+const WEEKDAYS = ["D", "S", "T", "Q", "Q", "S", "S"];
+
+function TideCalendar({ value, onChange, min = "2026-01-01", max = "2026-12-31" }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  const parsed = value ? new Date(value + "T12:00:00") : new Date();
+  const [viewYear, setViewYear] = useState(parsed.getFullYear());
+  const [viewMonth, setViewMonth] = useState(parsed.getMonth());
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  // When value changes externally, sync the view
+  useEffect(() => {
+    if (value) {
+      const d = new Date(value + "T12:00:00");
+      setViewYear(d.getFullYear());
+      setViewMonth(d.getMonth());
+    }
+  }, [value]);
+
+  const goPrev = useCallback(() => {
+    let m = viewMonth - 1, y = viewYear;
+    if (m < 0) { m = 11; y--; }
+    const minD = new Date(min + "T12:00:00");
+    if (y < minD.getFullYear() || (y === minD.getFullYear() && m < minD.getMonth())) return;
+    setViewMonth(m); setViewYear(y);
+  }, [viewMonth, viewYear, min]);
+
+  const goNext = useCallback(() => {
+    let m = viewMonth + 1, y = viewYear;
+    if (m > 11) { m = 0; y++; }
+    const maxD = new Date(max + "T12:00:00");
+    if (y > maxD.getFullYear() || (y === maxD.getFullYear() && m > maxD.getMonth())) return;
+    setViewMonth(m); setViewYear(y);
+  }, [viewMonth, viewYear, max]);
+
+  const selectDay = useCallback((day) => {
+    const iso = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    if (iso < min || iso > max) return;
+    onChange(iso);
+    setOpen(false);
+  }, [viewYear, viewMonth, min, max, onChange]);
+
+  // Build calendar grid
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const firstDow = new Date(viewYear, viewMonth, 1).getDay();
+  const cells = [];
+  for (let i = 0; i < firstDow; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  const todayStr = (() => {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-${String(n.getDate()).padStart(2, "0")}`;
+  })();
+
+  // Format display date
+  const displayDate = value
+    ? (() => {
+      const d = new Date(value + "T12:00:00");
+      return `${String(d.getDate()).padStart(2, "0")} de ${MONTH_NAMES[d.getMonth()]} de ${d.getFullYear()}`;
+    })()
+    : "Selecione uma data";
+
+  // Check nav bounds
+  const minD = new Date(min + "T12:00:00");
+  const maxD = new Date(max + "T12:00:00");
+  const canPrev = viewYear > minD.getFullYear() || (viewYear === minD.getFullYear() && viewMonth > minD.getMonth());
+  const canNext = viewYear < maxD.getFullYear() || (viewYear === maxD.getFullYear() && viewMonth < maxD.getMonth());
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      {/* Trigger button */}
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          ...selectStyle,
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 10, userSelect: "none",
+          borderColor: open ? "rgba(56,189,248,0.5)" : "rgba(56,189,248,0.18)",
+          boxShadow: open ? "0 0 12px rgba(56,189,248,0.15)" : "none",
+        }}
+      >
+        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+            <rect x="1" y="2" width="14" height="13" rx="2" stroke="#5a8fa8" strokeWidth="1.3" fill="none" />
+            <line x1="1" y1="6" x2="15" y2="6" stroke="#5a8fa8" strokeWidth="1" />
+            <line x1="5" y1="1" x2="5" y2="3.5" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" />
+            <line x1="11" y1="1" x2="11" y2="3.5" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" />
+          </svg>
+          {displayDate}
+        </span>
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{
+          transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0)"
+        }}>
+          <path d="M1 1L5 5L9 1" stroke="#5a8fa8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+
+      {/* Dropdown calendar */}
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0,
+          minWidth: 300,
+          background: "rgba(6,18,32,0.97)",
+          border: "1px solid rgba(56,189,248,0.2)",
+          borderRadius: 14,
+          boxShadow: "0 16px 48px rgba(0,0,0,0.6), 0 0 20px rgba(56,189,248,0.08)",
+          backdropFilter: "blur(16px)",
+          padding: 16,
+          zIndex: 1000,
+          animation: "calFadeIn 0.2s ease-out",
+        }}>
+          {/* Month/year nav */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            marginBottom: 14,
+          }}>
+            <button
+              onClick={(e) => { e.stopPropagation(); goPrev(); }}
+              disabled={!canPrev}
+              style={{
+                background: canPrev ? "rgba(56,189,248,0.1)" : "transparent",
+                border: canPrev ? "1px solid rgba(56,189,248,0.2)" : "1px solid rgba(255,255,255,0.05)",
+                borderRadius: 8, width: 32, height: 32,
+                cursor: canPrev ? "pointer" : "default",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: canPrev ? "#38bdf8" : "#2a4050",
+                fontSize: "1rem", fontWeight: 700,
+                transition: "all 0.15s",
+              }}
+            >‹</button>
+            <div style={{
+              fontFamily: "'Playfair Display', serif",
+              fontSize: "1rem", fontWeight: 700,
+              color: "#e0f4ff", letterSpacing: "0.02em",
+            }}>
+              {MONTH_NAMES[viewMonth]} {viewYear}
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); goNext(); }}
+              disabled={!canNext}
+              style={{
+                background: canNext ? "rgba(56,189,248,0.1)" : "transparent",
+                border: canNext ? "1px solid rgba(56,189,248,0.2)" : "1px solid rgba(255,255,255,0.05)",
+                borderRadius: 8, width: 32, height: 32,
+                cursor: canNext ? "pointer" : "default",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: canNext ? "#38bdf8" : "#2a4050",
+                fontSize: "1rem", fontWeight: 700,
+                transition: "all 0.15s",
+              }}
+            >›</button>
+          </div>
+
+          {/* Weekday headers */}
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(7, 1fr)",
+            gap: 2, marginBottom: 6,
+          }}>
+            {WEEKDAYS.map((w, i) => (
+              <div key={i} style={{
+                textAlign: "center", fontFamily: "monospace",
+                fontSize: "0.6rem", letterSpacing: "0.1em",
+                color: i === 0 ? "rgba(249,115,22,0.6)" : "#5a8fa8",
+                fontWeight: 600, padding: "4px 0",
+                textTransform: "uppercase",
+              }}>{w}</div>
+            ))}
+          </div>
+
+          {/* Day cells */}
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(7, 1fr)",
+            gap: 2,
+          }}>
+            {cells.map((day, idx) => {
+              if (day === null) return <div key={`e-${idx}`} />;
+              const iso = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+              const isSelected = iso === value;
+              const isToday = iso === todayStr;
+              const isDisabled = iso < min || iso > max;
+              const isSunday = idx % 7 === 0;
+
+              return (
+                <button
+                  key={day}
+                  onClick={(e) => { e.stopPropagation(); if (!isDisabled) selectDay(day); }}
+                  style={{
+                    position: "relative",
+                    width: "100%", aspectRatio: "1",
+                    border: isSelected
+                      ? "1.5px solid #38bdf8"
+                      : isToday
+                        ? "1px solid rgba(56,189,248,0.35)"
+                        : "1px solid transparent",
+                    borderRadius: 10,
+                    background: isSelected
+                      ? "rgba(56,189,248,0.2)"
+                      : isToday
+                        ? "rgba(56,189,248,0.06)"
+                        : "transparent",
+                    color: isDisabled
+                      ? "#1e3040"
+                      : isSelected
+                        ? "#fff"
+                        : isSunday
+                          ? "rgba(249,115,22,0.75)"
+                          : "#cce8f8",
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: "0.82rem",
+                    fontWeight: isSelected || isToday ? 700 : 400,
+                    cursor: isDisabled ? "default" : "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 0.15s",
+                    boxShadow: isSelected ? "0 0 10px rgba(56,189,248,0.25)" : "none",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isDisabled && !isSelected) {
+                      e.target.style.background = "rgba(56,189,248,0.1)";
+                      e.target.style.borderColor = "rgba(56,189,248,0.25)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isDisabled && !isSelected) {
+                      e.target.style.background = isToday ? "rgba(56,189,248,0.06)" : "transparent";
+                      e.target.style.borderColor = isToday ? "rgba(56,189,248,0.35)" : "transparent";
+                    }
+                  }}
+                >
+                  {day}
+                  {isToday && !isSelected && (
+                    <span style={{
+                      position: "absolute", bottom: 3,
+                      width: 4, height: 4, borderRadius: "50%",
+                      background: "#38bdf8",
+                    }} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Today shortcut */}
+          {todayStr >= min && todayStr <= max && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange(todayStr);
+                const d = new Date(todayStr + "T12:00:00");
+                setViewYear(d.getFullYear());
+                setViewMonth(d.getMonth());
+                setOpen(false);
+              }}
+              style={{
+                marginTop: 10, width: "100%",
+                padding: "8px 0",
+                background: "rgba(56,189,248,0.08)",
+                border: "1px solid rgba(56,189,248,0.15)",
+                borderRadius: 8,
+                color: "#38bdf8",
+                fontFamily: "monospace",
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = "rgba(56,189,248,0.15)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "rgba(56,189,248,0.08)";
+              }}
+            >
+              ● HOJE
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── CUSTOM BEACH SELECTOR ───
+function TideBeachSelect({ value, onChange, groups, allBeaches }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const listRef = useRef(null);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  // Scroll selected into view when opening
+  useEffect(() => {
+    if (open && listRef.current) {
+      const el = listRef.current.querySelector('[data-selected="true"]');
+      if (el) {
+        const list = listRef.current;
+        const elTop = el.offsetTop - list.offsetTop;
+        list.scrollTop = elTop - list.clientHeight / 2 + el.clientHeight / 2;
+      }
+    }
+  }, [open]);
+
+  const selectedLabel = allBeaches[value]?.label ?? "Selecione";
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      {/* Trigger */}
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          ...selectStyle,
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 10, userSelect: "none",
+          borderColor: open ? "rgba(56,189,248,0.5)" : "rgba(56,189,248,0.18)",
+          boxShadow: open ? "0 0 12px rgba(56,189,248,0.15)" : "none",
+        }}
+      >
+        <span style={{ display: "flex", alignItems: "center", gap: 8, overflow: "hidden" }}>
+          <svg width="14" height="16" viewBox="0 0 14 16" fill="none" style={{ flexShrink: 0 }}>
+            <path d="M7 1C4.24 1 2 3.24 2 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="#5a8fa8" strokeWidth="1.3" fill="none" />
+            <circle cx="7" cy="6" r="1.8" fill="#38bdf8" opacity="0.7" />
+          </svg>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selectedLabel}</span>
+        </span>
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{
+          flexShrink: 0, transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0)"
+        }}>
+          <path d="M1 1L5 5L9 1" stroke="#5a8fa8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+
+      {/* Dropdown */}
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0,
+          background: "rgba(6,18,32,0.97)",
+          border: "1px solid rgba(56,189,248,0.2)",
+          borderRadius: 14,
+          boxShadow: "0 16px 48px rgba(0,0,0,0.6), 0 0 20px rgba(56,189,248,0.08)",
+          backdropFilter: "blur(16px)",
+          zIndex: 1000,
+          animation: "calFadeIn 0.2s ease-out",
+          overflow: "hidden",
+        }}>
+          <div
+            ref={listRef}
+            style={{
+              maxHeight: 360, overflowY: "auto", padding: "8px 0",
+            }}
+          >
+            {groups.map((g, gi) => (
+              <div key={gi}>
+                {/* Group header */}
+                <div style={{
+                  padding: "10px 16px 6px",
+                  fontFamily: "monospace",
+                  fontSize: "0.62rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "#5a8fa8",
+                  borderTop: gi > 0 ? "1px solid rgba(56,189,248,0.08)" : "none",
+                  marginTop: gi > 0 ? 4 : 0,
+                }}>{g.group}</div>
+
+                {/* Beach items */}
+                {g.beaches.map((b) => {
+                  const globalIdx = allBeaches.findIndex(x => x.label === b.label && x.offset === b.offset);
+                  const isSelected = globalIdx === value;
+                  return (
+                    <div
+                      key={globalIdx}
+                      data-selected={isSelected ? "true" : undefined}
+                      onClick={() => { onChange(globalIdx); setOpen(false); }}
+                      style={{
+                        padding: "9px 16px 9px 28px",
+                        fontSize: "0.88rem",
+                        cursor: "pointer",
+                        display: "flex", alignItems: "center", gap: 8,
+                        color: isSelected ? "#fff" : "#cce8f8",
+                        background: isSelected ? "rgba(56,189,248,0.15)" : "transparent",
+                        borderLeft: isSelected ? "3px solid #38bdf8" : "3px solid transparent",
+                        fontWeight: isSelected ? 600 : 400,
+                        transition: "all 0.12s",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.background = "rgba(56,189,248,0.08)";
+                          e.currentTarget.style.borderLeftColor = "rgba(56,189,248,0.4)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.borderLeftColor = "transparent";
+                        }
+                      }}
+                    >
+                      {isSelected && (
+                        <span style={{
+                          width: 6, height: 6, borderRadius: "50%",
+                          background: "#38bdf8", flexShrink: 0,
+                          boxShadow: "0 0 6px #38bdf8",
+                        }} />
+                      )}
+                      {b.label}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─── MAIN APP ───
 export default function TideApp() {
@@ -1630,40 +2073,30 @@ export default function TideApp() {
 
         {/* CONTROLS */}
         <div className="tide-controls" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 22 }}>
-          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <span style={{
               fontFamily: "monospace", fontSize: "0.65rem", letterSpacing: "0.12em",
               textTransform: "uppercase", color: "#5a8fa8"
             }}>Praia / Localidade</span>
-            <select
+            <TideBeachSelect
               value={selectedBeach}
-              onChange={e => setSelectedBeach(+e.target.value)}
-              style={selectStyle}
-            >
-              {BEACH_GROUPS.map((g) => (
-                <optgroup key={g.group} label={g.group}>
-                  {g.beaches.map((b) => {
-                    const globalIdx = BEACHES.findIndex(x => x.label === b.label && x.offset === b.offset);
-                    return <option key={globalIdx} value={globalIdx}>{b.label}</option>;
-                  })}
-                </optgroup>
-              ))}
-            </select>
-          </label>
-          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              onChange={setSelectedBeach}
+              groups={BEACH_GROUPS}
+              allBeaches={BEACHES}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <span style={{
               fontFamily: "monospace", fontSize: "0.65rem", letterSpacing: "0.12em",
               textTransform: "uppercase", color: "#5a8fa8"
             }}>Data</span>
-            <input
-              type="date"
+            <TideCalendar
               value={date}
+              onChange={setDate}
               min="2026-01-01"
               max="2026-12-31"
-              onChange={e => setDate(e.target.value)}
-              style={selectStyle}
             />
-          </label>
+          </div>
         </div>
 
         {/* NOTICE */}
@@ -2096,12 +2529,9 @@ export default function TideApp() {
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
         @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+        @keyframes calFadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
         * { box-sizing: border-box; }
         select option { background: #0a1a2e; }
-        input[type=date]::-webkit-calendar-picker-indicator {
-          filter: invert(0.6) sepia(1) saturate(3) hue-rotate(175deg);
-          cursor: pointer;
-        }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #03080f; }
         ::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.2); border-radius: 3px; }
