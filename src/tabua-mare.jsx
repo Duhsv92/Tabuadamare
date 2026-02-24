@@ -2860,7 +2860,7 @@ export default function TideApp() {
           Dados extraídos da Tábua de Marés DHN 2026 · {PORT_INFO[beach.port]?.cidade ?? "Porto do Recife (PE)"} <strong style={{ color: "rgba(90,143,168,0.7)" }}>Marinha do Brasil</strong><br />
           Lat {PORT_INFO[beach.port]?.lat ?? "08°03'.4 S"} · Long {PORT_INFO[beach.port]?.long ?? "34°52' W"} · Fuso {PORT_INFO[beach.port]?.fuso ?? "UTC-03:00"} · Nível Médio {PORT_INFO[beach.port]?.nivel ?? "1,28 m"}<br />
           Curva por interpolação cosseno entre os eventos tabelados<br /><br />
-          Site Desenvolvido por <strong style={{ color: "rgba(90,143,168,0.7)" }}>© Eduardo Silva</strong>
+          Site Desenvolvido por <strong style={{ color: "rgba(90,143,168,0.7)" }}>© Eduardo Silva</strong> 2026
         </div>
 
       </div>
