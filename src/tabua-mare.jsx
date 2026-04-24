@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, ReferenceLine
@@ -1205,140 +1205,71 @@ const BEACH_GROUPS = [
     group: "📍 Recife",
     port: "recife",
     beaches: [
-      { label: "Boa Viagem", offset: 0, lat: -8.119, lon: -34.895 },
-      { label: "Pina", offset: 0, lat: -8.097, lon: -34.877 },
-      { label: "Brasília Teimosa", offset: 0, lat: -8.082, lon: -34.869 },
+      { label: "Boa Viagem", offset: 0 },
+      { label: "Pina", offset: 0 },
+      { label: "Brasília Teimosa", offset: 0 },
     ]
   },
   {
     group: "🔼 Litoral Norte",
     port: "recife",
     beaches: [
-      { label: "Olinda", offset: -10, lat: -7.998, lon: -34.845 },
-      { label: "Rio Doce (Olinda)", offset: -11, lat: -7.980, lon: -34.839 },
-      { label: "Janga (Paulista)", offset: -13, lat: -7.933, lon: -34.832 },
-      { label: "Conceição (Paulista)", offset: -14, lat: -7.918, lon: -34.829 },
-      { label: "Maria Farinha (Paulista)", offset: -15, lat: -7.875, lon: -34.826 },
-      { label: "Catuama (Abreu e Lima)", offset: -17, lat: -7.843, lon: -34.822 },
-      { label: "Engenho Corrente (Igarassu)", offset: -18, lat: -7.829, lon: -34.820 },
-      { label: "Forte Orange (Itamaracá)", offset: -20, lat: -7.803, lon: -34.821 },
-      { label: "Coroa do Avião (Itamaracá)", offset: -21, lat: -7.793, lon: -34.831 },
-      { label: "Vila Velha (Itamaracá)", offset: -20, lat: -7.764, lon: -34.834 },
-      { label: "Pilar (Itamaracá)", offset: -22, lat: -7.749, lon: -34.843 },
-      { label: "Ponta de Pedras (Goiana)", offset: -25, lat: -7.636, lon: -34.822 },
-      { label: "Carne de Vaca (Goiana)", offset: -27, lat: -7.595, lon: -34.818 },
-      { label: "Barra de Catuama (Goiana)", offset: -28, lat: -7.585, lon: -34.815 },
+      { label: "Olinda", offset: -10 },
+      { label: "Rio Doce (Olinda)", offset: -11 },
+      { label: "Janga (Paulista)", offset: -13 },
+      { label: "Conceição (Paulista)", offset: -14 },
+      { label: "Maria Farinha (Paulista)", offset: -15 },
+      { label: "Catuama (Abreu e Lima)", offset: -17 },
+      { label: "Engenho Corrente (Igarassu)", offset: -18 },
+      { label: "Forte Orange (Itamaracá)", offset: -20 },
+      { label: "Coroa do Avião (Itamaracá)", offset: -21 },
+      { label: "Vila Velha (Itamaracá)", offset: -20 },
+      { label: "Pilar (Itamaracá)", offset: -22 },
+      { label: "Ponta de Pedras (Goiana)", offset: -25 },
+      { label: "Carne de Vaca (Goiana)", offset: -27 },
+      { label: "Barra de Catuama (Goiana)", offset: -28 },
     ]
   },
   {
     group: "🔽 Litoral Sul — Recife",
     port: "recife",
     beaches: [
-      { label: "Piedade (Jaboatão)", offset: 5, lat: -8.147, lon: -34.909 },
-      { label: "Candeias (Jaboatão)", offset: 6, lat: -8.170, lon: -34.916 },
-      { label: "Barra de Jangada (Jaboatão)", offset: 7, lat: -8.195, lon: -34.923 },
-      { label: "Gaibu (Cabo de Sto. Agostinho)", offset: 9, lat: -8.309, lon: -34.948 },
-      { label: "Calhetas (Cabo de Sto. Agostinho)", offset: 9, lat: -8.315, lon: -34.950 },
-      { label: "Enseada dos Corais (Cabo)", offset: 11, lat: -8.340, lon: -34.955 },
+      { label: "Piedade (Jaboatão)", offset: 5 },
+      { label: "Candeias (Jaboatão)", offset: 6 },
+      { label: "Barra de Jangada (Jaboatão)", offset: 7 },
+      { label: "Gaibu (Cabo de Sto. Agostinho)", offset: 9 },
+      { label: "Calhetas (Cabo de Sto. Agostinho)", offset: 9 },
+      { label: "Enseada dos Corais (Cabo)", offset: 11 },
     ]
   },
   {
     group: "⚓ Porto de Suape e Entorno",
     port: "suape",
     beaches: [
-      { label: "Porto de Suape", offset: 0, lat: -8.394, lon: -34.960 },
-      { label: "Praia de Suape", offset: 0, lat: -8.368, lon: -34.957 },
-      { label: "Porto de Galinhas (Ipojuca)", offset: 10, lat: -8.506, lon: -35.005 },
-      { label: "Muro Alto (Ipojuca)", offset: 11, lat: -8.490, lon: -34.999 },
-      { label: "Maracaípe (Ipojuca)", offset: 12, lat: -8.528, lon: -35.010 },
-      { label: "Serrambi (Ipojuca)", offset: 13, lat: -8.546, lon: -35.016 },
-      { label: "Sirinhaém", offset: 15, lat: -8.597, lon: -35.090 },
-      { label: "Barra de São Miguel (Rio Formoso)", offset: 16, lat: -8.660, lon: -35.130 },
-      { label: "São José da Coroa Grande (Barreiros)", offset: 18, lat: -8.900, lon: -35.150 },
-      { label: "Carneiros (Tamandaré)", offset: 19, lat: -8.715, lon: -35.098 },
-      { label: "Tamandaré", offset: 20, lat: -8.760, lon: -35.104 },
-      { label: "Guadalupe (Tamandaré)", offset: 21, lat: -8.738, lon: -35.100 },
+      { label: "Porto de Suape", offset: 0 },
+      { label: "Praia de Suape", offset: 0 },
+      { label: "Porto de Galinhas (Ipojuca)", offset: 10 },
+      { label: "Muro Alto (Ipojuca)", offset: 11 },
+      { label: "Maracaípe (Ipojuca)", offset: 12 },
+      { label: "Serrambi (Ipojuca)", offset: 13 },
+      { label: "Sirinhaém", offset: 15 },
+      { label: "Barra de São Miguel (Rio Formoso)", offset: 16 },
+      { label: "São José da Coroa Grande (Barreiros)", offset: 18 },
+      { label: "Carneiros (Tamandaré)", offset: 19 },
+      { label: "Tamandaré", offset: 20 },
+      { label: "Guadalupe (Tamandaré)", offset: 21 },
     ]
   },
   {
     group: "🏝️ Ilha Oceânica",
     port: "noronha",
     beaches: [
-      { label: "Fernando de Noronha", offset: 0, lat: -3.854, lon: -32.424 },
+      { label: "Fernando de Noronha", offset: 0 },
     ]
   }
 ];
 
 const BEACHES = BEACH_GROUPS.flatMap(g => g.beaches.map(b => ({ ...b, port: g.port ?? "recife" })));
-
-// ═══════════════════════════════════════════════════════════
-// PREVISÃO DO TEMPO — Open-Meteo (API gratuita, sem chave)
-// ═══════════════════════════════════════════════════════════
-const WMO_CODES = {
-  0: { icon: "☀️", label: "Céu limpo" },
-  1: { icon: "🌤️", label: "Poucas nuvens" },
-  2: { icon: "⛅", label: "Parcialmente nublado" },
-  3: { icon: "☁️", label: "Nublado" },
-  45: { icon: "🌫️", label: "Nevoeiro" },
-  48: { icon: "🌫️", label: "Nevoeiro com geada" },
-  51: { icon: "🌦️", label: "Garoa leve" },
-  53: { icon: "🌦️", label: "Garoa" },
-  55: { icon: "🌧️", label: "Garoa intensa" },
-  61: { icon: "🌧️", label: "Chuva leve" },
-  63: { icon: "🌧️", label: "Chuva moderada" },
-  65: { icon: "🌧️", label: "Chuva forte" },
-  71: { icon: "🌨️", label: "Neve leve" },
-  73: { icon: "🌨️", label: "Neve" },
-  75: { icon: "🌨️", label: "Neve forte" },
-  80: { icon: "🌦️", label: "Pancadas leves" },
-  81: { icon: "🌧️", label: "Pancadas de chuva" },
-  82: { icon: "⛈️", label: "Pancadas fortes" },
-  85: { icon: "🌨️", label: "Pancadas de neve" },
-  86: { icon: "🌨️", label: "Nevasca" },
-  95: { icon: "⛈️", label: "Trovoada" },
-  96: { icon: "⛈️", label: "Trovoada com granizo" },
-  99: { icon: "⛈️", label: "Trovoada forte com granizo" },
-};
-
-function windDirLabel(deg) {
-  if (deg == null) return "—";
-  const dirs = ["N", "NE", "L", "SE", "S", "SO", "O", "NO"];
-  return dirs[Math.round(deg / 45) % 8];
-}
-
-function windClassification(speed) {
-  if (speed < 12) return { label: "Calmo", color: "#22c55e" };
-  if (speed < 25) return { label: "Brisa", color: "#38bdf8" };
-  if (speed < 40) return { label: "Moderado", color: "#eab308" };
-  return { label: "Forte", color: "#f97316" };
-}
-
-function uvLevel(uv) {
-  if (uv < 3) return { label: "Baixo", color: "#22c55e" };
-  if (uv < 6) return { label: "Moderado", color: "#eab308" };
-  if (uv < 8) return { label: "Alto", color: "#f97316" };
-  if (uv < 11) return { label: "Muito alto", color: "#ef4444" };
-  return { label: "Extremo", color: "#a855f7" };
-}
-
-const DAILY_WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-
-async function fetchWeatherData(lat, lon) {
-  const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m,uv_index&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=America/Recife&forecast_days=3`;
-  const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&current=wave_height,wave_direction,wave_period&timezone=America/Recife`;
-
-  const [weatherRes, marineRes] = await Promise.allSettled([
-    fetch(weatherUrl).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
-    fetch(marineUrl).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
-  ]);
-
-  const weather = weatherRes.status === "fulfilled" ? weatherRes.value : null;
-  const marine = marineRes.status === "fulfilled" && !marineRes.value.error ? marineRes.value : null;
-
-  if (!weather || !weather.current) return null;
-
-  return { weather, marine };
-}
 
 // ─── TIDE ENGINE ───
 function hmToMin(hm) {
@@ -1375,8 +1306,6 @@ function buildCurve(dateStr, offsetMin, data = DHN_DATA) {
     const type = h >= prevH && h >= nextH ? "high" : "low";
     return { min, h, type };
   });
-
-
   // refine type using neighbors
   events.forEach((e, i) => {
     const prev = events[i - 1]?.h ?? e.h;
@@ -1471,447 +1400,6 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-// ─── CUSTOM CALENDAR COMPONENT ───
-const MONTH_NAMES = [
-  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-];
-const WEEKDAYS = ["D", "S", "T", "Q", "Q", "S", "S"];
-
-function TideCalendar({ value, onChange, min = "2026-01-01", max = "2026-12-31" }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  const parsed = value ? new Date(value + "T12:00:00") : new Date();
-  const [viewYear, setViewYear] = useState(parsed.getFullYear());
-  const [viewMonth, setViewMonth] = useState(parsed.getMonth());
-
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
-
-  // When value changes externally, sync the view
-  useEffect(() => {
-    if (value) {
-      const d = new Date(value + "T12:00:00");
-      setViewYear(d.getFullYear());
-      setViewMonth(d.getMonth());
-    }
-  }, [value]);
-
-  const goPrev = useCallback(() => {
-    let m = viewMonth - 1, y = viewYear;
-    if (m < 0) { m = 11; y--; }
-    const minD = new Date(min + "T12:00:00");
-    if (y < minD.getFullYear() || (y === minD.getFullYear() && m < minD.getMonth())) return;
-    setViewMonth(m); setViewYear(y);
-  }, [viewMonth, viewYear, min]);
-
-  const goNext = useCallback(() => {
-    let m = viewMonth + 1, y = viewYear;
-    if (m > 11) { m = 0; y++; }
-    const maxD = new Date(max + "T12:00:00");
-    if (y > maxD.getFullYear() || (y === maxD.getFullYear() && m > maxD.getMonth())) return;
-    setViewMonth(m); setViewYear(y);
-  }, [viewMonth, viewYear, max]);
-
-  const selectDay = useCallback((day) => {
-    const iso = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    if (iso < min || iso > max) return;
-    onChange(iso);
-    setOpen(false);
-  }, [viewYear, viewMonth, min, max, onChange]);
-
-  // Build calendar grid
-  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-  const firstDow = new Date(viewYear, viewMonth, 1).getDay();
-  const cells = [];
-  for (let i = 0; i < firstDow; i++) cells.push(null);
-  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
-
-  const todayStr = (() => {
-    const n = new Date();
-    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-${String(n.getDate()).padStart(2, "0")}`;
-  })();
-
-  // Format display date
-  const displayDate = value
-    ? (() => {
-      const d = new Date(value + "T12:00:00");
-      return `${String(d.getDate()).padStart(2, "0")} de ${MONTH_NAMES[d.getMonth()]} de ${d.getFullYear()}`;
-    })()
-    : "Selecione uma data";
-
-  // Check nav bounds
-  const minD = new Date(min + "T12:00:00");
-  const maxD = new Date(max + "T12:00:00");
-  const canPrev = viewYear > minD.getFullYear() || (viewYear === minD.getFullYear() && viewMonth > minD.getMonth());
-  const canNext = viewYear < maxD.getFullYear() || (viewYear === maxD.getFullYear() && viewMonth < maxD.getMonth());
-
-  return (
-    <div ref={ref} style={{ position: "relative" }}>
-      {/* Trigger button */}
-      <div
-        onClick={() => setOpen(!open)}
-        style={{
-          ...selectStyle,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 10, userSelect: "none",
-          borderColor: open ? "rgba(56,189,248,0.5)" : "rgba(56,189,248,0.18)",
-          boxShadow: open ? "0 0 12px rgba(56,189,248,0.15)" : "none",
-        }}
-      >
-        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-            <rect x="1" y="2" width="14" height="13" rx="2" stroke="#5a8fa8" strokeWidth="1.3" fill="none" />
-            <line x1="1" y1="6" x2="15" y2="6" stroke="#5a8fa8" strokeWidth="1" />
-            <line x1="5" y1="1" x2="5" y2="3.5" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" />
-            <line x1="11" y1="1" x2="11" y2="3.5" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" />
-          </svg>
-          {displayDate}
-        </span>
-        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{
-          transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0)"
-        }}>
-          <path d="M1 1L5 5L9 1" stroke="#5a8fa8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
-
-      {/* Dropdown calendar */}
-      {open && (
-        <div style={{
-          position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0,
-          minWidth: 300,
-          background: "rgba(6,18,32,0.97)",
-          border: "1px solid rgba(56,189,248,0.2)",
-          borderRadius: 14,
-          boxShadow: "0 16px 48px rgba(0,0,0,0.6), 0 0 20px rgba(56,189,248,0.08)",
-          backdropFilter: "blur(16px)",
-          padding: 16,
-          zIndex: 1000,
-          animation: "calFadeIn 0.2s ease-out",
-        }}>
-          {/* Month/year nav */}
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            marginBottom: 14,
-          }}>
-            <button
-              onClick={(e) => { e.stopPropagation(); goPrev(); }}
-              disabled={!canPrev}
-              style={{
-                background: canPrev ? "rgba(56,189,248,0.1)" : "transparent",
-                border: canPrev ? "1px solid rgba(56,189,248,0.2)" : "1px solid rgba(255,255,255,0.05)",
-                borderRadius: 8, width: 32, height: 32,
-                cursor: canPrev ? "pointer" : "default",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                color: canPrev ? "#38bdf8" : "#2a4050",
-                fontSize: "1rem", fontWeight: 700,
-                transition: "all 0.15s",
-              }}
-            >‹</button>
-            <div style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "1rem", fontWeight: 700,
-              color: "#e0f4ff", letterSpacing: "0.02em",
-            }}>
-              {MONTH_NAMES[viewMonth]} {viewYear}
-            </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); goNext(); }}
-              disabled={!canNext}
-              style={{
-                background: canNext ? "rgba(56,189,248,0.1)" : "transparent",
-                border: canNext ? "1px solid rgba(56,189,248,0.2)" : "1px solid rgba(255,255,255,0.05)",
-                borderRadius: 8, width: 32, height: 32,
-                cursor: canNext ? "pointer" : "default",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                color: canNext ? "#38bdf8" : "#2a4050",
-                fontSize: "1rem", fontWeight: 700,
-                transition: "all 0.15s",
-              }}
-            >›</button>
-          </div>
-
-          {/* Weekday headers */}
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(7, 1fr)",
-            gap: 2, marginBottom: 6,
-          }}>
-            {WEEKDAYS.map((w, i) => (
-              <div key={i} style={{
-                textAlign: "center", fontFamily: "monospace",
-                fontSize: "0.6rem", letterSpacing: "0.1em",
-                color: i === 0 ? "rgba(249,115,22,0.6)" : "#5a8fa8",
-                fontWeight: 600, padding: "4px 0",
-                textTransform: "uppercase",
-              }}>{w}</div>
-            ))}
-          </div>
-
-          {/* Day cells */}
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(7, 1fr)",
-            gap: 2,
-          }}>
-            {cells.map((day, idx) => {
-              if (day === null) return <div key={`e-${idx}`} />;
-              const iso = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-              const isSelected = iso === value;
-              const isToday = iso === todayStr;
-              const isDisabled = iso < min || iso > max;
-              const isSunday = idx % 7 === 0;
-
-              return (
-                <button
-                  key={day}
-                  onClick={(e) => { e.stopPropagation(); if (!isDisabled) selectDay(day); }}
-                  style={{
-                    position: "relative",
-                    width: "100%", aspectRatio: "1",
-                    border: isSelected
-                      ? "1.5px solid #38bdf8"
-                      : isToday
-                        ? "1px solid rgba(56,189,248,0.35)"
-                        : "1px solid transparent",
-                    borderRadius: 10,
-                    background: isSelected
-                      ? "rgba(56,189,248,0.2)"
-                      : isToday
-                        ? "rgba(56,189,248,0.06)"
-                        : "transparent",
-                    color: isDisabled
-                      ? "#1e3040"
-                      : isSelected
-                        ? "#fff"
-                        : isSunday
-                          ? "rgba(249,115,22,0.75)"
-                          : "#cce8f8",
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: "0.82rem",
-                    fontWeight: isSelected || isToday ? 700 : 400,
-                    cursor: isDisabled ? "default" : "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "all 0.15s",
-                    boxShadow: isSelected ? "0 0 10px rgba(56,189,248,0.25)" : "none",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isDisabled && !isSelected) {
-                      e.target.style.background = "rgba(56,189,248,0.1)";
-                      e.target.style.borderColor = "rgba(56,189,248,0.25)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isDisabled && !isSelected) {
-                      e.target.style.background = isToday ? "rgba(56,189,248,0.06)" : "transparent";
-                      e.target.style.borderColor = isToday ? "rgba(56,189,248,0.35)" : "transparent";
-                    }
-                  }}
-                >
-                  {day}
-                  {isToday && !isSelected && (
-                    <span style={{
-                      position: "absolute", bottom: 3,
-                      width: 4, height: 4, borderRadius: "50%",
-                      background: "#38bdf8",
-                    }} />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Today shortcut */}
-          {todayStr >= min && todayStr <= max && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onChange(todayStr);
-                const d = new Date(todayStr + "T12:00:00");
-                setViewYear(d.getFullYear());
-                setViewMonth(d.getMonth());
-                setOpen(false);
-              }}
-              style={{
-                marginTop: 10, width: "100%",
-                padding: "8px 0",
-                background: "rgba(56,189,248,0.08)",
-                border: "1px solid rgba(56,189,248,0.15)",
-                borderRadius: 8,
-                color: "#38bdf8",
-                fontFamily: "monospace",
-                fontSize: "0.72rem",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                cursor: "pointer",
-                transition: "all 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = "rgba(56,189,248,0.15)";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = "rgba(56,189,248,0.08)";
-              }}
-            >
-              ● HOJE
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── CUSTOM BEACH SELECTOR ───
-function TideBeachSelect({ value, onChange, groups, allBeaches }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  const listRef = useRef(null);
-
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
-
-  // Scroll selected into view when opening
-  useEffect(() => {
-    if (open && listRef.current) {
-      const el = listRef.current.querySelector('[data-selected="true"]');
-      if (el) {
-        const list = listRef.current;
-        const elTop = el.offsetTop - list.offsetTop;
-        list.scrollTop = elTop - list.clientHeight / 2 + el.clientHeight / 2;
-      }
-    }
-  }, [open]);
-
-  const selectedLabel = allBeaches[value]?.label ?? "Selecione";
-
-  return (
-    <div ref={ref} style={{ position: "relative" }}>
-      {/* Trigger */}
-      <div
-        onClick={() => setOpen(!open)}
-        style={{
-          ...selectStyle,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 10, userSelect: "none",
-          borderColor: open ? "rgba(56,189,248,0.5)" : "rgba(56,189,248,0.18)",
-          boxShadow: open ? "0 0 12px rgba(56,189,248,0.15)" : "none",
-        }}
-      >
-        <span style={{ display: "flex", alignItems: "center", gap: 8, overflow: "hidden" }}>
-          <svg width="14" height="16" viewBox="0 0 14 16" fill="none" style={{ flexShrink: 0 }}>
-            <path d="M7 1C4.24 1 2 3.24 2 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="#5a8fa8" strokeWidth="1.3" fill="none" />
-            <circle cx="7" cy="6" r="1.8" fill="#38bdf8" opacity="0.7" />
-          </svg>
-          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selectedLabel}</span>
-        </span>
-        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{
-          flexShrink: 0, transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0)"
-        }}>
-          <path d="M1 1L5 5L9 1" stroke="#5a8fa8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
-
-      {/* Dropdown */}
-      {open && (
-        <div style={{
-          position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0,
-          background: "rgba(6,18,32,0.97)",
-          border: "1px solid rgba(56,189,248,0.2)",
-          borderRadius: 14,
-          boxShadow: "0 16px 48px rgba(0,0,0,0.6), 0 0 20px rgba(56,189,248,0.08)",
-          backdropFilter: "blur(16px)",
-          zIndex: 1000,
-          animation: "calFadeIn 0.2s ease-out",
-          overflow: "hidden",
-        }}>
-          <div
-            ref={listRef}
-            style={{
-              maxHeight: 360, overflowY: "auto", padding: "8px 0",
-            }}
-          >
-            {groups.map((g, gi) => (
-              <div key={gi}>
-                {/* Group header */}
-                <div style={{
-                  padding: "10px 16px 6px",
-                  fontFamily: "monospace",
-                  fontSize: "0.62rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "#5a8fa8",
-                  borderTop: gi > 0 ? "1px solid rgba(56,189,248,0.08)" : "none",
-                  marginTop: gi > 0 ? 4 : 0,
-                }}>{g.group}</div>
-
-                {/* Beach items */}
-                {g.beaches.map((b) => {
-                  const globalIdx = allBeaches.findIndex(x => x.label === b.label && x.offset === b.offset);
-                  const isSelected = globalIdx === value;
-                  return (
-                    <div
-                      key={globalIdx}
-                      data-selected={isSelected ? "true" : undefined}
-                      onClick={() => { onChange(globalIdx); setOpen(false); }}
-                      style={{
-                        padding: "9px 16px 9px 28px",
-                        fontSize: "0.88rem",
-                        cursor: "pointer",
-                        display: "flex", alignItems: "center", gap: 8,
-                        color: isSelected ? "#fff" : "#cce8f8",
-                        background: isSelected ? "rgba(56,189,248,0.15)" : "transparent",
-                        borderLeft: isSelected ? "3px solid #38bdf8" : "3px solid transparent",
-                        fontWeight: isSelected ? 600 : 400,
-                        transition: "all 0.12s",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isSelected) {
-                          e.currentTarget.style.background = "rgba(56,189,248,0.08)";
-                          e.currentTarget.style.borderLeftColor = "rgba(56,189,248,0.4)";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isSelected) {
-                          e.currentTarget.style.background = "transparent";
-                          e.currentTarget.style.borderLeftColor = "transparent";
-                        }
-                      }}
-                    >
-                      {isSelected && (
-                        <span style={{
-                          width: 6, height: 6, borderRadius: "50%",
-                          background: "#38bdf8", flexShrink: 0,
-                          boxShadow: "0 0 6px #38bdf8",
-                        }} />
-                      )}
-                      {b.label}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ─── MAIN APP ───
 export default function TideApp() {
   const n = new Date();
@@ -1921,38 +1409,11 @@ export default function TideApp() {
   const [selectedBeach, setSelectedBeach] = useState(0);
   const [date, setDate] = useState(defaultDate);
   const [now, setNow] = useState(new Date());
-  const [weatherData, setWeatherData] = useState(null);
-  const [weatherLoading, setWeatherLoading] = useState(false);
-  const weatherCache = useRef({});
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30000);
     return () => clearInterval(t);
   }, []);
-
-  // Fetch weather for selected beach
-  useEffect(() => {
-    const beach = BEACHES[selectedBeach];
-    if (!beach?.lat || !beach?.lon) return;
-    const cacheKey = `${beach.lat}_${beach.lon}`;
-    const cached = weatherCache.current[cacheKey];
-    if (cached && Date.now() - cached.ts < 30 * 60 * 1000) {
-      setWeatherData(cached.data);
-      return;
-    }
-    setWeatherLoading(true);
-    fetchWeatherData(beach.lat, beach.lon)
-      .then(data => {
-        if (data) {
-          weatherCache.current[cacheKey] = { data, ts: Date.now() };
-          setWeatherData(data);
-        } else {
-          setWeatherData(null);
-        }
-      })
-      .catch(() => setWeatherData(null))
-      .finally(() => setWeatherLoading(false));
-  }, [selectedBeach]);
 
   const beach = BEACHES[selectedBeach];
   const portData = PORT_DATA[beach.port] ?? DHN_DATA;
@@ -2169,30 +1630,40 @@ export default function TideApp() {
 
         {/* CONTROLS */}
         <div className="tide-controls" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 22 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <span style={{
               fontFamily: "monospace", fontSize: "0.65rem", letterSpacing: "0.12em",
               textTransform: "uppercase", color: "#5a8fa8"
             }}>Praia / Localidade</span>
-            <TideBeachSelect
+            <select
               value={selectedBeach}
-              onChange={setSelectedBeach}
-              groups={BEACH_GROUPS}
-              allBeaches={BEACHES}
-            />
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              onChange={e => setSelectedBeach(+e.target.value)}
+              style={selectStyle}
+            >
+              {BEACH_GROUPS.map((g) => (
+                <optgroup key={g.group} label={g.group}>
+                  {g.beaches.map((b) => {
+                    const globalIdx = BEACHES.findIndex(x => x.label === b.label && x.offset === b.offset);
+                    return <option key={globalIdx} value={globalIdx}>{b.label}</option>;
+                  })}
+                </optgroup>
+              ))}
+            </select>
+          </label>
+          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <span style={{
               fontFamily: "monospace", fontSize: "0.65rem", letterSpacing: "0.12em",
               textTransform: "uppercase", color: "#5a8fa8"
             }}>Data</span>
-            <TideCalendar
+            <input
+              type="date"
               value={date}
-              onChange={setDate}
               min="2026-01-01"
               max="2026-12-31"
+              onChange={e => setDate(e.target.value)}
+              style={selectStyle}
             />
-          </div>
+          </label>
         </div>
 
         {/* NOTICE */}
@@ -2451,250 +1922,6 @@ export default function TideApp() {
           </div>
         )}
 
-        {/* WEATHER CARD */}
-        <div className="tide-card" style={cardStyle}>
-          <SectionTitle>🌤️ Previsão do Tempo — {beach.label}</SectionTitle>
-
-          {weatherLoading ? (
-            <div style={{
-              display: "flex", flexDirection: "column", gap: 12,
-              animation: "pulse 1.5s ease-in-out infinite",
-            }}>
-              {[1, 2, 3].map(i => (
-                <div key={i} style={{
-                  height: 20, borderRadius: 6,
-                  background: "rgba(56,189,248,0.08)",
-                  width: `${70 + i * 10}%`,
-                }} />
-              ))}
-            </div>
-          ) : !weatherData ? (
-            <div style={{ color: "#5a8fa8", fontSize: "0.85rem", padding: "8px 0" }}>
-              ⚠️ Não foi possível carregar a previsão do tempo. Verifique sua conexão.
-            </div>
-          ) : (() => {
-            const c = weatherData.weather.current;
-            const m = weatherData.marine?.current;
-            const d = weatherData.weather.daily;
-            const wmo = WMO_CODES[c.weather_code] || { icon: "🌡️", label: "Indisponível" };
-            const wind = windClassification(c.wind_speed_10m);
-            const uv = uvLevel(c.uv_index);
-
-            // Fishing weather assessment
-            const windOk = c.wind_speed_10m < 25;
-            const rainOk = (c.precipitation_probability ?? 0) < 40;
-            const wavesOk = !m || (m.wave_height ?? 99) < 1.5;
-            const stormCodes = [65, 82, 95, 96, 99];
-            const noStorm = !stormCodes.includes(c.weather_code);
-            const allGood = windOk && rainOk && wavesOk && noStorm;
-            const fishWeather = allGood
-              ? {
-                icon: "🟢", label: "Tempo favorável para pesca", color: "#22c55e",
-                desc: "Vento controlado, baixa chance de chuva" + (wavesOk && m ? " e mar calmo" : "") + "."
-              }
-              : {
-                icon: "🟡", label: "Atenção às condições", color: "#eab308",
-                desc: [
-                  !windOk && "vento forte",
-                  !rainOk && "chance de chuva",
-                  !wavesOk && "ondas altas",
-                  !noStorm && "risco de tempestade",
-                ].filter(Boolean).join(", ") + ". Avalie antes de ir."
-              };
-
-            return (
-              <>
-                {/* Current conditions */}
-                <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", marginBottom: 16 }}>
-                  <span style={{ fontSize: "2.8rem", lineHeight: 1 }}>{wmo.icon}</span>
-                  <div>
-                    <div style={{
-                      fontFamily: "'Playfair Display', serif", fontSize: "2.2rem",
-                      fontWeight: 700, color: "#e0f4ff", lineHeight: 1,
-                    }}>
-                      {Math.round(c.temperature_2m)}°<span style={{ fontSize: "1rem", color: "#5a8fa8" }}>C</span>
-                    </div>
-                    <div style={{ fontSize: "0.85rem", color: "#cce8f8", marginTop: 4 }}>{wmo.label}</div>
-                    <div style={{ fontSize: "0.75rem", color: "#5a8fa8", marginTop: 2 }}>
-                      Sensação: {Math.round(c.apparent_temperature)}°C
-                    </div>
-                  </div>
-                </div>
-
-                {/* Detail grid */}
-                <div style={{
-                  display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-                  gap: 10, marginBottom: 16,
-                }}>
-                  {/* Wind */}
-                  <div style={{
-                    padding: "12px 14px", borderRadius: 10,
-                    background: "rgba(56,189,248,0.06)",
-                    border: "1px solid rgba(56,189,248,0.12)",
-                  }}>
-                    <div style={{
-                      fontFamily: "monospace", fontSize: "0.6rem", letterSpacing: "0.1em",
-                      textTransform: "uppercase", color: "#5a8fa8", marginBottom: 6,
-                    }}>💨 Vento</div>
-                    <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: "1rem", color: "#e0f4ff" }}>
-                      {Math.round(c.wind_speed_10m)} km/h
-                    </div>
-                    <div style={{ fontSize: "0.75rem", color: "#7ab8d4", marginTop: 2 }}>
-                      {windDirLabel(c.wind_direction_10m)}
-                      <span style={{ marginLeft: 6, display: "inline-block", transform: `rotate(${c.wind_direction_10m}deg)` }}>↓</span>
-                      <span style={{ marginLeft: 8, color: wind.color, fontWeight: 600 }}>{wind.label}</span>
-                    </div>
-                  </div>
-
-                  {/* Humidity */}
-                  <div style={{
-                    padding: "12px 14px", borderRadius: 10,
-                    background: "rgba(56,189,248,0.06)",
-                    border: "1px solid rgba(56,189,248,0.12)",
-                  }}>
-                    <div style={{
-                      fontFamily: "monospace", fontSize: "0.6rem", letterSpacing: "0.1em",
-                      textTransform: "uppercase", color: "#5a8fa8", marginBottom: 6,
-                    }}>💧 Umidade</div>
-                    <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: "1rem", color: "#e0f4ff" }}>
-                      {c.relative_humidity_2m}%
-                    </div>
-                  </div>
-
-                  {/* Rain */}
-                  <div style={{
-                    padding: "12px 14px", borderRadius: 10,
-                    background: "rgba(56,189,248,0.06)",
-                    border: "1px solid rgba(56,189,248,0.12)",
-                  }}>
-                    <div style={{
-                      fontFamily: "monospace", fontSize: "0.6rem", letterSpacing: "0.1em",
-                      textTransform: "uppercase", color: "#5a8fa8", marginBottom: 6,
-                    }}>🌧️ Chuva</div>
-                    <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: "1rem", color: "#e0f4ff" }}>
-                      {c.precipitation_probability ?? 0}%
-                    </div>
-                    <div style={{ fontSize: "0.75rem", color: "#7ab8d4", marginTop: 2 }}>
-                      probabilidade
-                    </div>
-                  </div>
-
-                  {/* UV */}
-                  <div style={{
-                    padding: "12px 14px", borderRadius: 10,
-                    background: "rgba(56,189,248,0.06)",
-                    border: "1px solid rgba(56,189,248,0.12)",
-                  }}>
-                    <div style={{
-                      fontFamily: "monospace", fontSize: "0.6rem", letterSpacing: "0.1em",
-                      textTransform: "uppercase", color: "#5a8fa8", marginBottom: 6,
-                    }}>☀️ UV</div>
-                    <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: "1rem", color: "#e0f4ff" }}>
-                      {c.uv_index?.toFixed(1) ?? "—"}
-                    </div>
-                    <div style={{ fontSize: "0.75rem", color: uv.color, fontWeight: 600, marginTop: 2 }}>
-                      {uv.label}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Waves (if available) */}
-                {m && m.wave_height != null && (
-                  <div style={{
-                    padding: "12px 16px", borderRadius: 10, marginBottom: 16,
-                    background: "rgba(56,189,248,0.06)",
-                    border: "1px solid rgba(56,189,248,0.12)",
-                    display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
-                  }}>
-                    <span style={{ fontSize: "1.3rem" }}>🌊</span>
-                    <div>
-                      <div style={{
-                        fontFamily: "monospace", fontSize: "0.6rem", letterSpacing: "0.1em",
-                        textTransform: "uppercase", color: "#5a8fa8", marginBottom: 4,
-                      }}>Ondas</div>
-                      <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: "1rem", color: "#e0f4ff" }}>
-                        {m.wave_height?.toFixed(1)} m
-                        {m.wave_period != null && <span style={{ color: "#7ab8d4", fontWeight: 400, fontSize: "0.85rem" }}> · {m.wave_period?.toFixed(0)}s</span>}
-                        {m.wave_direction != null && <span style={{ color: "#5a8fa8", fontWeight: 400, fontSize: "0.85rem" }}> · {windDirLabel(m.wave_direction)}</span>}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 3-day forecast */}
-                {d && d.time && d.time.length > 0 && (
-                  <div style={{ marginBottom: 16 }}>
-                    <div style={{
-                      fontFamily: "monospace", fontSize: "0.62rem", letterSpacing: "0.12em",
-                      textTransform: "uppercase", color: "#5a8fa8", marginBottom: 10,
-                    }}>Próximos Dias</div>
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      {d.time.map((t, i) => {
-                        const dt = new Date(t + "T12:00:00");
-                        const dayWmo = WMO_CODES[d.weather_code[i]] || { icon: "🌡️", label: "—" };
-                        const isToday = i === 0;
-                        return (
-                          <div key={i} style={{
-                            flex: "1 1 0", minWidth: 100,
-                            padding: "12px 10px", borderRadius: 10, textAlign: "center",
-                            background: isToday ? "rgba(56,189,248,0.1)" : "rgba(255,255,255,0.03)",
-                            border: `1px solid ${isToday ? "rgba(56,189,248,0.2)" : "rgba(255,255,255,0.06)"}`,
-                          }}>
-                            <div style={{
-                              fontFamily: "monospace", fontSize: "0.7rem", fontWeight: 700,
-                              color: isToday ? "#38bdf8" : "#7ab8d4", marginBottom: 6,
-                            }}>
-                              {isToday ? "Hoje" : DAILY_WEEKDAYS[dt.getDay()]}
-                            </div>
-                            <div style={{ fontSize: "1.5rem", lineHeight: 1, marginBottom: 6 }}>{dayWmo.icon}</div>
-                            <div style={{ fontFamily: "monospace", fontSize: "0.82rem", color: "#e0f4ff", fontWeight: 600 }}>
-                              {Math.round(d.temperature_2m_min[i])}° / {Math.round(d.temperature_2m_max[i])}°
-                            </div>
-                            <div style={{ fontFamily: "monospace", fontSize: "0.68rem", color: "#5a8fa8", marginTop: 4 }}>
-                              🌧️ {d.precipitation_probability_max[i] ?? 0}%
-                            </div>
-                            <div style={{ fontFamily: "monospace", fontSize: "0.68rem", color: "#5a8fa8", marginTop: 2 }}>
-                              💨 {Math.round(d.wind_speed_10m_max[i])} km/h
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Fishing weather assessment */}
-                <div style={{
-                  padding: "12px 16px", borderRadius: 10,
-                  background: allGood ? "rgba(34,197,94,0.08)" : "rgba(234,179,8,0.08)",
-                  border: `1px solid ${allGood ? "rgba(34,197,94,0.2)" : "rgba(234,179,8,0.2)"}`,
-                  display: "flex", alignItems: "center", gap: 12,
-                }}>
-                  <span style={{ fontSize: "1.5rem" }}>{fishWeather.icon}</span>
-                  <div>
-                    <div style={{
-                      fontWeight: 700, fontSize: "0.9rem", color: fishWeather.color,
-                    }}>{fishWeather.label}</div>
-                    <div style={{ fontSize: "0.78rem", color: "#7ab8d4", marginTop: 2 }}>
-                      {fishWeather.desc}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Attribution */}
-                <div style={{
-                  marginTop: 14, paddingTop: 12,
-                  borderTop: "1px solid rgba(56,189,248,0.1)",
-                  fontSize: "0.65rem", color: "rgba(90,143,168,0.5)", textAlign: "center",
-                }}>
-                  Dados meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer"
-                    style={{ color: "rgba(56,189,248,0.5)", textDecoration: "none" }}>Open-Meteo.com</a> (CC BY 4.0)
-                </div>
-              </>
-            );
-          })()}
-        </div>
-
         {/* CHART */}
         <div className="tide-card" style={{ ...cardStyle, marginBottom: 16 }}>
           <SectionTitle>🌊 Curva de Maré</SectionTitle>
@@ -2860,7 +2087,7 @@ export default function TideApp() {
           Dados extraídos da Tábua de Marés DHN 2026 · {PORT_INFO[beach.port]?.cidade ?? "Porto do Recife (PE)"} <strong style={{ color: "rgba(90,143,168,0.7)" }}>Marinha do Brasil</strong><br />
           Lat {PORT_INFO[beach.port]?.lat ?? "08°03'.4 S"} · Long {PORT_INFO[beach.port]?.long ?? "34°52' W"} · Fuso {PORT_INFO[beach.port]?.fuso ?? "UTC-03:00"} · Nível Médio {PORT_INFO[beach.port]?.nivel ?? "1,28 m"}<br />
           Curva por interpolação cosseno entre os eventos tabelados<br /><br />
-          Site Desenvolvido por <strong style={{ color: "rgba(90,143,168,0.7)" }}>© Eduardo Silva</strong> 2026
+          Site Desenvolvido por <strong style={{ color: "rgba(90,143,168,0.7)" }}>© Eduardo Silva</strong>
         </div>
 
       </div>
@@ -2869,8 +2096,12 @@ export default function TideApp() {
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
         @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
-        @keyframes calFadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
         * { box-sizing: border-box; }
+        select option { background: #0a1a2e; }
+        input[type=date]::-webkit-calendar-picker-indicator {
+          filter: invert(0.6) sepia(1) saturate(3) hue-rotate(175deg);
+          cursor: pointer;
+        }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #03080f; }
         ::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.2); border-radius: 3px; }
